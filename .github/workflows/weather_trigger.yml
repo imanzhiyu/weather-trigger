@@ -1,0 +1,19 @@
+name: Trigger Weather API
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # 每10分钟
+    - cron: '0 */6 * * *'   # 每6小时
+  workflow_dispatch:        # 手动运行
+
+jobs:
+  trigger-weather:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Real-time Weather Fetch
+        run: |
+          curl -X POST https://nexus8023.pythonanywhere.com/api/weather/fetch_weather
+
+      - name: Trigger Forecast Weather Fetch
+        run: |
+          curl -X POST https://nexus8023.pythonanywhere.com/api/weather/forecast_weather
