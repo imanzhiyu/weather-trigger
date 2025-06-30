@@ -2,18 +2,31 @@ name: Trigger Weather API
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # 每10分钟
-    - cron: '0 */6 * * *'   # 每6小时
-  workflow_dispatch:        # 手动运行
+    - cron: '*/10 3-22 * * *'  # 每天3:00-22:50，每10分钟
+    - cron: '0 6,12,18 * * *'   # 每天6:00、12:00、18:00
+  workflow_dispatch:
 
 jobs:
   trigger-weather:
     runs-on: ubuntu-latest
     steps:
+      # 添加时间检查（确保即使schedule触发异常也只在指定时间运行）
+      - name: Check time window
+        id: time_check
+        run: |
+          CURRENT_HOUR=$(date +%-H)
+          if [ $CURRENT_HOUR -ge 5 ] && [ $CURRENT_HOUR -lt 24 ]; then
+            echo "::set-output name=valid_time::true"
+          else
+            echo "::set-output name=valid_time::false"
+          fi
+
       - name: Trigger Real-time Weather Fetch
+        if: steps.time_check.outputs.valid_time == 'true'
         run: |
           curl -X POST https://nexus8023.pythonanywhere.com/api/weather/fetch_weather
 
       - name: Trigger Forecast Weather Fetch
+        if: steps.time_check.outputs.valid_time == 'true'
         run: |
           curl -X POST https://nexus8023.pythonanywhere.com/api/weather/forecast_weather
