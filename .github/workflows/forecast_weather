@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check time window
-  id: time_check
-  run: |
-    CURRENT_HOUR=$(date +%-H)
-    if [[ "$CURRENT_HOUR" == "6" || "$CURRENT_HOUR" == "12" || "$CURRENT_HOUR" == "18" ]]; then
-      echo "valid_time=true" >> "$GITHUB_OUTPUT"
-    else
-      echo "valid_time=false" >> "$GITHUB_OUTPUT"
-    fi
+        id: time_check
+        run: |
+          CURRENT_HOUR=$(date +%-H)
+          if [[ "$CURRENT_HOUR" == "6" || "$CURRENT_HOUR" == "12" || "$CURRENT_HOUR" == "18" ]]; then
+            echo "valid_time=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "valid_time=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Trigger Forecast Weather Fetch
         if: steps.time_check.outputs.valid_time == 'true'
