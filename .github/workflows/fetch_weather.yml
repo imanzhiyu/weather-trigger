@@ -1,4 +1,4 @@
-name: Trigger Weather API
+name: Trigger Real-time Weather Fetch
 
 on:
   schedule:
@@ -7,26 +7,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  trigger-weather:
+  fetch-weather:
     runs-on: ubuntu-latest
     steps:
-      # 添加时间检查（确保即使schedule触发异常也只在指定时间运行）
       - name: Check time window
         id: time_check
         run: |
           CURRENT_HOUR=$(date +%-H)
           if [ $CURRENT_HOUR -ge 5 ] && [ $CURRENT_HOUR -lt 24 ]; then
-            echo "::set-output name=valid_time::true"
+            echo "valid_time=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::set-output name=valid_time::false"
+            echo "valid_time=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Trigger Real-time Weather Fetch
         if: steps.time_check.outputs.valid_time == 'true'
         run: |
           curl -X POST https://nexus8023.pythonanywhere.com/api/weather/fetch_weather
-
-      - name: Trigger Forecast Weather Fetch
-        if: steps.time_check.outputs.valid_time == 'true'
-        run: |
-          curl -X POST https://nexus8023.pythonanywhere.com/api/weather/forecast_weather
