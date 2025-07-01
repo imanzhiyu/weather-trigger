@@ -2,7 +2,7 @@ name: Trigger Weather API
 
 on:
   schedule:
-    - cron: '*/10 3-22 * * *'  # 每天3:00-22:50，每10分钟
+    - cron: '*/10 * * * *'  # 每10分钟
     - cron: '0 6,12,18 * * *'   # 每天6:00、12:00、18:00
   workflow_dispatch:
 
