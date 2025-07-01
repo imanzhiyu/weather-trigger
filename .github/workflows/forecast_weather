@@ -1,0 +1,25 @@
+name: Trigger Forecast Weather Fetch
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # 每6小时触发一次（0:00, 6:00, 12:00, 18:00）
+  workflow_dispatch:
+
+jobs:
+  forecast-weather:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check time window
+  id: time_check
+  run: |
+    CURRENT_HOUR=$(date +%-H)
+    if [[ "$CURRENT_HOUR" == "6" || "$CURRENT_HOUR" == "12" || "$CURRENT_HOUR" == "18" ]]; then
+      echo "valid_time=true" >> "$GITHUB_OUTPUT"
+    else
+      echo "valid_time=false" >> "$GITHUB_OUTPUT"
+    fi
+
+      - name: Trigger Forecast Weather Fetch
+        if: steps.time_check.outputs.valid_time == 'true'
+        run: |
+          curl -X POST https://nexus8023.pythonanywhere.com/api/weather/forecast_weather
